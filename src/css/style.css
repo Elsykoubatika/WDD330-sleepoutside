@@ -241,6 +241,13 @@ button {
   grid-column: 3;
 }
 
+.cart-card--empty {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+}
+
 @media screen and (min-width: 500px) {
   body {
     max-width: 1080px;
