@@ -1,33 +1,18 @@
-import { getLocalStorage, setLocalStorage } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
-import { getParam, updateCartCount } from "./utils.mjs";
 import ProductDetails from "./ProductDetails.mjs";
+import { getParam, loadHeaderFooter, renderBreadcrumb, updateCartCount } from "./utils.mjs";
 
-/* Initialize ProductData with the category "tents" and retrieve the product ID from the URL query string */
-const dataSource = new ProductData("tents");
 
-/* Retrieve the product ID from the URL query string using the getParam function */
-const productId = getParam("product");
-
-/* Initialize ProductDetails with the product ID and data source */
-const productDetails = new ProductDetails(productId, dataSource);
-productDetails.init();
-
-/* Function to add a product to the shopping cart in local storage */
-function addProductToCart(product) {
-  const storedCart = getLocalStorage("so-cart");
-  const cartItems = Array.isArray(storedCart) ? storedCart : [];
-  cartItems.push(product);
-  setLocalStorage("so-cart", cartItems);
+async function init() {
+  await loadHeaderFooter();
   updateCartCount();
-}
-// add to cart button event handler
-async function addToCartHandler(e) {
-  const product = await dataSource.findProductById(e.target.dataset.id);
-  addProductToCart(product);
+
+  const productId = getParam("product");
+  const category = getParam("category") || "tents";
+  const dataSource = new ProductData(category);
+  const productDetails = new ProductDetails(productId, dataSource);
+  await productDetails.init();
+  renderBreadcrumb(productDetails.product?.Category ? productDetails.product.Category.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()) : category);
 }
 
-// add listener to Add to Cart button
-document
-  .getElementById("addToCart")
-  .addEventListener("click", addToCartHandler);
+init();

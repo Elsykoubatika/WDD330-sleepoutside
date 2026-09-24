@@ -5,9 +5,14 @@ export function qs(selector, parent = document) {
 // or a more concise version if you are into that sort of thing:
 // export const qs = (selector, parent = document) => parent.querySelector(selector);
 
-// retrieve data from localstorage
 export function getLocalStorage(key) {
-  return JSON.parse(localStorage.getItem(key));
+  const value = localStorage.getItem(key);
+  if (value === null) return null;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
 }
 // save data to local storage
 export function setLocalStorage(key, data) {
@@ -23,6 +28,8 @@ export function setClick(selector, callback) {
 }
 
 
+
+// Action: read the product/category identifier from the URL query string.
 // get a parameter from the URL query string
 export function getParam (param) {
   const queryString = window.location.search;
@@ -68,6 +75,8 @@ export async function loadHeaderFooter() {
 }
 
 
+
+// Action: add a superscript counter to the backpack/cart icon and hide it when empty.
 export function updateCartCount() {
   const cartItems = getLocalStorage("so-cart") || [];
   const cart = document.querySelector(".cart");
@@ -79,8 +88,27 @@ export function updateCartCount() {
     countElement.className = "cart-count";
     cart.querySelector("a").appendChild(countElement);
   }
-
-  const count = Array.isArray(cartItems) ? cartItems.length : 0;
+  // Action: count the actual requested units, not just the number of unique product rows.
+  const count = Array.isArray(cartItems)
+    ? cartItems.reduce((total, item) => total + Number(item.Quantity || 1), 0)
+    : 0;
   countElement.textContent = count;
   countElement.classList.toggle("hide", count === 0);
+}
+
+
+
+// Action: create the breadcrumb below the navbar on listing and product pages.
+export function renderBreadcrumb(text) {
+  const breadcrumb = document.querySelector("#breadcrumb");
+  if (!breadcrumb || !text) return;
+  breadcrumb.innerHTML = `<nav aria-label="Breadcrumb"><a href="/index.html">Home</a> <span aria-hidden="true">-&gt;</span> <span>${text}</span></nav>`;
+}
+
+
+// Action: provide a larger image candidate on wider screens when the source naming convention supports it.
+export function getResponsiveImage(image) {
+  if (!image) return "";
+  const large = image.replace(/~320(?=\.[^.]+$)/, "~640");
+  return `<picture><source media="(min-width: 700px)" srcset="${large}"><img src="${image}" alt=""></picture>`;
 }
