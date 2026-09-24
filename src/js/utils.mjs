@@ -66,3 +66,21 @@ export async function loadHeaderFooter() {
   renderWithTemplate(headerTemplate, headerElement);
   renderWithTemplate(footerTemplate, footerElement);
 }
+
+
+export function updateCartCount() {
+  const cartItems = getLocalStorage("so-cart") || [];
+  const cart = document.querySelector(".cart");
+  if (!cart) return;
+
+  let countElement = cart.querySelector(".cart-count");
+  if (!countElement) {
+    countElement = document.createElement("sup");
+    countElement.className = "cart-count";
+    cart.querySelector("a").appendChild(countElement);
+  }
+
+  const count = Array.isArray(cartItems) ? cartItems.length : 0;
+  countElement.textContent = count;
+  countElement.classList.toggle("hide", count === 0);
+}

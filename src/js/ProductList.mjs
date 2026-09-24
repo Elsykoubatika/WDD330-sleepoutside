@@ -8,6 +8,13 @@ function productCardTemplate(product) {
         <h2>${product.Brand.Name}</h2>
         <h3>${product.Name}</h3>
         <p class="product-card__price">$${product.FinalPrice}</p>
+        ${
+          Number(product.FinalPrice) < Number(product.SuggestedRetailPrice)
+            ? `<span class="discount-badge">${Math.round(
+                (1 - Number(product.FinalPrice) / Number(product.SuggestedRetailPrice)) * 100,
+              )}% OFF</span>`
+            : ""
+        }
       </a>
     </li>
     `;

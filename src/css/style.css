@@ -99,6 +99,47 @@ p {
   color: var(--tertiary-color);
 }
 
+.hide {
+  display: none;
+}
+
+.cart-count {
+  position: absolute;
+  top: 0.25rem;
+  right: -0.25rem;
+  min-width: 1.1rem;
+  padding: 0.15rem 0.3rem;
+  border-radius: 50%;
+  background-color: var(--tertiary-color);
+  color: white;
+  font-size: 0.65rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.discount-badge {
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--secondary-color);
+  color: white;
+  font-size: var(--small-font);
+  font-weight: bold;
+}
+
+.cart-footer {
+  margin: 1rem;
+  padding: 1rem;
+  border-top: 2px solid var(--primary-color);
+  text-align: right;
+}
+
+.cart-total {
+  font-size: var(--large-font);
+  font-weight: bold;
+}
+
 button {
   padding: 0.5em 2em;
   background-color: var(--secondary-color);
