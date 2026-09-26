@@ -8,8 +8,12 @@ function normalizeProducts(data) {
   return data?.products || data?.Result || data?.results || [];
 }
 
-// Action: use the category search and product-by-ID API endpoints, with local JSON as a development fallback.
-// This class is an ES module so the same data logic can be reused by listings and product details.
+function normalizeProduct(data) {
+  if (!data) return null;
+  if (Array.isArray(data)) return data[0] || null;
+  return data.product || data.Product || data.result || data.Result || data;
+}
+
 export default class ProductData {
   constructor(category = "tents") {
     this.category = category;
@@ -51,12 +55,30 @@ export default class ProductData {
   }
 
   async findProductById(id) {
+
+    // Action: try the API first, then fall back to the local category JSON if the API is unavailable or returns no usable product.
     try {
       const response = await fetch(`${this.api}/product/${encodeURIComponent(id)}`);
-      return await convertToJson(response);
+      const product = normalizeProduct(await convertToJson(response));
+      if (product && String(product.Id) === String(id)) return product;
     } catch (error) {
-      const products = await this.getData();
-      return products.find((item) => String(item.Id) === String(id));
+      // The local JSON fallback below keeps the assignment usable during API/network problems.
     }
+
+    const categories = [this.category, "tents", "backpacks", "sleeping-bags", "hammocks"];
+    const checked = new Set();
+    for (const category of categories) {
+      if (checked.has(category)) continue;
+      checked.add(category);
+      try {
+        const response = await fetch(`/json/${category}.json`);
+        const products = normalizeProducts(await convertToJson(response));
+        const found = products.find((item) => String(item.Id) === String(id));
+        if (found) return { ...found, Category: found.Category || category };
+      } catch (error) {
+        // Continue searching the remaining local categories.
+      }
+    }
+    return null;
   }
 }

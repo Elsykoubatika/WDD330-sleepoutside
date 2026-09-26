@@ -32,8 +32,18 @@ img {
 
 header {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
   padding: 0.5rem;
+}
+
+header .site-search {
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+header .cart {
+  flex: 0 0 auto;
 }
 
 p {
@@ -99,10 +109,12 @@ p {
   color: var(--tertiary-color);
 }
 
+/* PROMPT 1 - Cart footer is hidden until cart.js confirms that the cart has items. */
 .hide {
   display: none;
 }
 
+/* PROMPT 1 - Superscript item count displayed on the backpack/cart icon. */
 .cart-count {
   position: absolute;
   top: 0.25rem;
@@ -117,6 +129,7 @@ p {
   text-align: center;
 }
 
+/* PROMPT 1 - Visual indicator used when FinalPrice is lower than SuggestedRetailPrice. */
 .discount-badge {
   display: inline-block;
   margin-top: 0.25rem;
@@ -128,15 +141,17 @@ p {
   font-weight: bold;
 }
 
+/* Container reserved for the cart total (and future checkout controls). */
 .cart-footer {
-  margin: 1rem;
+  margin-top: 1rem;
   padding: 1rem;
-  border-top: 2px solid var(--primary-color);
   text-align: right;
+  border-top: 1px solid #ccc;
 }
 
+/*  Displays the calculated cart total. */
 .cart-total {
-  font-size: var(--large-font);
+  font-size: 1.2rem;
   font-weight: bold;
 }
 
@@ -244,8 +259,22 @@ button {
   width: 100%;
 }
 
+/* PROMPT 2 - Remove-from-cart button sits in the corner of each rendered cart item. */
+.remove-cart-item {
+  border: 0;
+  background: transparent;
+  color: var(--tertiary-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.1rem 0.35rem;
+  position: absolute;
+  top: 0.1rem;
+  right: 0.1rem;
+}
+
 /* Start cart list card styles */
 .cart-card {
+  position: relative;
   display: grid;
   grid-template-columns: 25% auto 15%;
   font-size: var(--small-font);
@@ -293,6 +322,7 @@ button {
   }
 
   .cart-card {
+  position: relative;
     font-size: inherit;
     grid-template-columns: 150px auto 15%;
   }
@@ -301,4 +331,168 @@ button {
 footer {
   font-size: var(--small-font);
   padding: 1em;
+}
+
+/* Category and announcement styles */
+.category-list .product-list {
+  gap: 1rem;
+}
+
+.category-card {
+  list-style: none;
+  flex: 1 1 200px;
+  max-width: 240px;
+  padding: 1rem;
+  border: 1px solid var(--light-grey);
+  text-align: center;
+}
+
+.category-card a {
+  text-decoration: none;
+  color: var(--dark-grey);
+}
+
+.category-card img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.alert-list {
+  width: 100%;
+}
+
+.alert-list p {
+  margin: 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.cart-card {
+  position: relative;
+  position: relative;
+}
+
+.remove-cart-item {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dark-grey);
+  font-size: 1.4rem;
+  line-height: 1;
+  z-index: 2;
+}
+
+.remove-cart-item:hover {
+  background: var(--light-grey);
+}
+
+.empty-cart {
+  list-style: none;
+  padding: 2rem;
+  text-align: center;
+}
+
+
+/* keep the search form visible in the shared navbar and make it usable on small screens. */
+.site-search {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+}
+
+.site-search label {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.site-search input {
+  width: min(30vw, 220px);
+  padding: 0.45rem;
+}
+.site-search button {
+  display: inline-block;
+  margin: 0;
+  padding: 0.45rem 0.75rem;
+  font-size: var(--small-font);
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*place the current location directly below the navbar. */
+.breadcrumb {
+  padding: 0.65rem 1rem;
+  font-size: var(--small-font);
+}
+.breadcrumb a {
+  color: var(--secondary-color);
+}
+
+/*style the product-list sorting control. */
+.sort-label {
+  margin-right: 0.5rem;
+}
+.sort-products {
+  padding: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+/*allow the picture element to use the appropriate image candidate for the viewport. */
+.product-card picture,
+.product-detail-image picture {
+  display: block;
+}
+.product-card picture img,
+.product-detail-image img {
+  width: 100%;
+  height: auto;
+}
+
+/* make quantity controls easy to use and keep the remove button in the card corner. */
+.cart-quantity {
+  width: 4rem;
+  padding: 0.25rem;
+  margin-left: 0.25rem;
+}
+.cart-card__quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media screen and (max-width: 650px) {
+  /* 
+     Action: allow the search box to fit beneath the logo/cart area on narrow screens. */
+  #header {
+    flex-wrap: wrap;
+  }
+  .site-search {
+    order: 3;
+    width: 100%;
+    margin: 0.5rem 0 0;
+    justify-content: center;
+  }
+  .site-search input {
+    flex: 1;
+    width: auto;
+  }
 }
