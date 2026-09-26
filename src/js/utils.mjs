@@ -98,14 +98,13 @@ export async function loadTemplate(path) {
 }
 
 
-
 export async function loadHeaderFooter() {
 
   const headerTemplate =
-    await loadTemplate("/src/partials/header.html");
+    await loadTemplate("../partials/header.html");
 
   const footerTemplate =
-    await loadTemplate("/src/partials/footer.html");
+    await loadTemplate("../partials/footer.html");
 
   const headerElement =
     document.querySelector("#main-header");
@@ -131,11 +130,9 @@ export async function loadHeaderFooter() {
 
 export function updateCartCount() {
 
-  const cartItems =
-    getLocalStorage("so-cart") || [];
+  const cartItems = getLocalStorage("so-cart") || [];
 
-  const cart =
-    document.querySelector(".cart");
+  const cart = document.querySelector(".cart");
 
   if (!cart) return;
 
@@ -192,12 +189,10 @@ export function renderBreadcrumb(text) {
   `;
 }
 
-
-
-export function getResponsiveImage(image) {
-
+export function getResponsiveImage(image, alt = "") {
   if (!image) return "";
 
+  // Convert the 320px image to the 640px version for larger screens.
   const large = image.replace(
     /~320(?=\.[^.]+$)/,
     "~640"
@@ -210,7 +205,7 @@ export function getResponsiveImage(image) {
         srcset="${large}">
       <img
         src="${image}"
-        alt="">
+        alt="${alt}">
     </picture>
   `;
 }
