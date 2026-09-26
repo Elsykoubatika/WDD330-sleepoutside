@@ -1,10 +1,11 @@
 
+// Retourne le premier élément correspondant au sélecteur.
 export function qs(selector, parent = document) {
   return parent.querySelector(selector);
 }
 
+// Récupère une valeur depuis localStorage.
 export function getLocalStorage(key) {
-
   const value = localStorage.getItem(key);
 
   if (value === null) {
@@ -18,38 +19,33 @@ export function getLocalStorage(key) {
   }
 }
 
-// Save data to localStorage.
+
+// Enregistre une valeur dans localStorage.
 export function setLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
 
-
-// Set a listener for both touchend and click.
 export function setClick(selector, callback) {
+  const element = qs(selector);
 
-  qs(selector).addEventListener("touchend", (event) => {
+  if (!element) {
+    return;
+  }
 
+  element.addEventListener("touchend", (event) => {
     event.preventDefault();
-
-    callback();
-
+    callback(event);
   });
 
-  qs(selector).addEventListener("click", callback);
+  element.addEventListener("click", callback);
 }
 
 
 export function getParam(param) {
-
-  const queryString = window.location.search;
-
-  const urlParams = new URLSearchParams(queryString);
-
-  return urlParams.get(param);
+  const url = new URL(window.location.href);
+  return url.searchParams.get(param);
 }
 
-
-// Render a list using a template function.
 export function renderListWithTemplate(
   template,
   parentElement,
@@ -57,6 +53,9 @@ export function renderListWithTemplate(
   position = "afterbegin",
   clear = false
 ) {
+  if (!parentElement) {
+    return;
+  }
 
   const htmlStrings = list.map(template);
 
@@ -70,14 +69,15 @@ export function renderListWithTemplate(
   );
 }
 
-
-// Render a template into an element.
 export function renderWithTemplate(
   template,
   parentElement,
   data,
   callback
 ) {
+  if (!parentElement) {
+    return;
+  }
 
   parentElement.innerHTML = template;
 
@@ -86,31 +86,45 @@ export function renderWithTemplate(
   }
 }
 
-
-// Load an HTML template.
 export async function loadTemplate(path) {
+  const response = await fetch(path);
 
-  const res = await fetch(path);
+  if (!response.ok) {
+    throw new Error(
+      `Impossible de charger ${path} : ${response.status}`
+    );
+  }
 
-  const template = await res.text();
-
-  return template;
+  return response.text();
 }
 
 
 export async function loadHeaderFooter() {
+  /*
+   * import.meta.url permet de construire un chemin fiable
+   * à partir de utils.mjs.
+   *
+   * utils.mjs se trouve dans :
+   * src/js/utils.mjs
+   *
+   * Les partials se trouvent dans :
+   * src/partials/
+   */
+  const headerUrl = new URL(
+    "../partials/header.html",
+    import.meta.url
+  );
 
-  const headerTemplate =
-    await loadTemplate("../partials/header.html");
+  const footerUrl = new URL(
+    "../partials/footer.html",
+    import.meta.url
+  );
 
-  const footerTemplate =
-    await loadTemplate("../partials/footer.html");
+  const headerTemplate = await loadTemplate(headerUrl);
+  const footerTemplate = await loadTemplate(footerUrl);
 
-  const headerElement =
-    document.querySelector("#main-header");
-
-  const footerElement =
-    document.querySelector("#main-footer");
+  const headerElement = document.querySelector("#main-header");
+  const footerElement = document.querySelector("#main-footer");
 
   if (headerElement) {
     renderWithTemplate(
@@ -127,40 +141,42 @@ export async function loadHeaderFooter() {
   }
 }
 
-
 export function updateCartCount() {
-
-  const cartItems = getLocalStorage("so-cart") || [];
-
+  const cartItems = getLocalStorage("so-cart");
   const cart = document.querySelector(".cart");
 
-  if (!cart) return;
+  if (!cart) {
+    return;
+  }
 
-  let countElement =
-    cart.querySelector(".cart-count");
+  let countElement = cart.querySelector(".cart-count");
 
   if (!countElement) {
+    countElement = document.createElement("sup");
+    countElement.className = "cart-count";
 
-    countElement =
-      document.createElement("sup");
-
-    countElement.className =
-      "cart-count";
-
-    const cartLink =
-      cart.querySelector("a");
+    const cartLink = cart.querySelector("a");
 
     if (cartLink) {
       cartLink.appendChild(countElement);
     }
   }
 
+  // Ignore les éléments null ou invalides du panier.
   const count = Array.isArray(cartItems)
-    ? cartItems.reduce(
-        (total, item) =>
-          total + Number(item.Quantity || 1),
-        0
-      )
+    ? cartItems.reduce((total, item) => {
+        if (!item || typeof item !== "object") {
+          return total;
+        }
+
+        const quantity = Number(item.Quantity || 1);
+
+        return total + (
+          Number.isFinite(quantity) && quantity > 0
+            ? quantity
+            : 1
+        );
+      }, 0)
     : 0;
 
   countElement.textContent = count;
@@ -172,27 +188,43 @@ export function updateCartCount() {
 }
 
 
-
 export function renderBreadcrumb(text) {
-
   const breadcrumb =
     document.querySelector("#breadcrumb");
 
-  if (!breadcrumb || !text) return;
+  if (!breadcrumb || !text) {
+    return;
+  }
 
   breadcrumb.innerHTML = `
     <nav aria-label="Breadcrumb">
-      <a href="/index.html">Home</a>
+      <a href="/src/index.html">Home</a>
       <span aria-hidden="true"> → </span>
       <span>${text}</span>
     </nav>
   `;
 }
 
-export function getResponsiveImage(image, alt = "") {
-  if (!image) return "";
 
-  // Convert the 320px image to the 640px version for larger screens.
+export function getResponsiveImage(image, alt = "") {
+  if (!image) {
+    return "";
+  }
+
+  /*
+   * Exemple :
+   * photo~320.jpg
+   *
+   * devient :
+   * photo~640.jpg
+   *
+   * IMPORTANT :
+   * l'ancienne regex :
+   *
+   * /\~320(?=**\.**[^.]+$)/
+   *
+   * était invalide.
+   */
   const large = image.replace(
     /~320(?=\.[^.]+$)/,
     "~640"
