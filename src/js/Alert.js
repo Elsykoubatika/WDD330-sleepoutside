@@ -1,5 +1,4 @@
-// PROMPT 2 - ALERT MODULE
-// Action: load alerts.json, create one paragraph per alert, apply its colors, and prepend the alert section to <main>.
+//load alerts.json, create one paragraph per alert, apply its colors, and prepend the alert section to <main>.
 export default class Alert {
   constructor(parentElement) {
     this.parentElement = parentElement;

@@ -109,12 +109,12 @@ p {
   color: var(--tertiary-color);
 }
 
-/* PROMPT 1 - Cart footer is hidden until cart.js confirms that the cart has items. */
+/* Cart footer is hidden until cart.js confirms that the cart has items. */
 .hide {
   display: none;
 }
 
-/* PROMPT 1 - Superscript item count displayed on the backpack/cart icon. */
+/* Superscript item count displayed on the backpack/cart icon. */
 .cart-count {
   position: absolute;
   top: 0.25rem;
@@ -129,7 +129,7 @@ p {
   text-align: center;
 }
 
-/* PROMPT 1 - Visual indicator used when FinalPrice is lower than SuggestedRetailPrice. */
+/* Visual indicator used when FinalPrice is lower than SuggestedRetailPrice. */
 .discount-badge {
   display: inline-block;
   margin-top: 0.25rem;
@@ -259,7 +259,7 @@ button {
   width: 100%;
 }
 
-/* PROMPT 2 - Remove-from-cart button sits in the corner of each rendered cart item. */
+/* Remove-from-cart button sits in the corner of each rendered cart item. */
 .remove-cart-item {
   border: 0;
   background: transparent;
