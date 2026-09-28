@@ -64,10 +64,24 @@ export default class ProductList {
     this.renderList(this.products);
   }
 
-  renderList(list) {
-    this.products = Array.isArray(list)
-      ? list
-      : [];
+  renderList(list, sortOrder = "") {
+    const products = Array.isArray(list) ? [...list] : [];
+
+    const getName = (product) =>
+      product.NameWithoutBrand || product.Name || "";
+
+    const sorters = {
+      "name-asc": (a, b) => getName(a).localeCompare(getName(b)),
+      "name-desc": (a, b) => getName(b).localeCompare(getName(a)),
+      "price-asc": (a, b) => Number(a.FinalPrice) - Number(b.FinalPrice),
+      "price-desc": (a, b) => Number(b.FinalPrice) - Number(a.FinalPrice)
+    };
+
+    if (sorters[sortOrder]) {
+      products.sort(sorters[sortOrder]);
+    }
+
+    this.products = products;
 
     renderListWithTemplate(
       productCardTemplate,
