@@ -1,32 +1,84 @@
-import { getLocalStorage, setLocalStorage } from "./utils.mjs";
 import ProductData from "./ProductData.mjs";
-import getParam from "./utils.mjs";
 import ProductDetails from "./ProductDetails.mjs";
 
-/* Initialize ProductData with the category "tents" and retrieve the product ID from the URL query string */
-const dataSource = new ProductData("tents");
+import {
+  getParam,
+  loadHeaderFooter,
+  renderBreadcrumb,
+  updateCartCount
+} from "./utils.mjs";
 
-/* Retrieve the product ID from the URL query string using the getParam function */
-const productId = getParam("product");
 
-/* Initialize ProductDetails with the product ID and data source */
-const productDetails = new ProductDetails(productId, dataSource);
-productDetails.init();
+async function init() {
+  const detail = document.querySelector(".product-detail");
 
-/* Function to add a product to the shopping cart in local storage */
-function addProductToCart(product) {
-  const storedCart = getLocalStorage("so-cart");
-  const cartItems = Array.isArray(storedCart) ? storedCart : [];
-  cartItems.push(product);
-  setLocalStorage("so-cart", cartItems);
+  try {
+    const productId = getParam("product");
+
+    if (!productId) {
+      throw new Error(
+        "Aucun paramètre 'product' n'a été trouvé dans l'URL."
+      );
+    }
+
+
+    try {
+      await loadHeaderFooter();
+    } catch (headerError) {
+      // Ignore the header/footer failure and keep the product page usable.
+    }
+
+    updateCartCount();
+
+    const category = getParam("category") || "tents";
+    const dataSource = new ProductData(category);
+
+    const productDetails = new ProductDetails(productId, dataSource);
+    await productDetails.init();
+
+    if (!productDetails.product) {
+      throw new Error(
+        `Le produit '${productId}' n'a pas été trouvé dans ${category}.json`
+      );
+    }
+
+    const breadcrumbCategory = productDetails.product.Category || category;
+
+    const breadcrumbText = breadcrumbCategory
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+    renderBreadcrumb(
+      `${breadcrumbText} → ${
+        productDetails.product.NameWithoutBrand ||
+        productDetails.product.Name
+      }`
+    );
+  } catch (error) {
+    if (detail) {
+      detail.innerHTML = `
+        <div class="product-error">
+          <h2>Impossible de charger le produit</h2>
+
+          <p>
+            Une erreur s'est produite lors du chargement
+            de ce produit.
+          </p>
+
+          <p>
+            <strong>Erreur :</strong>
+            ${error.message}
+          </p>
+
+          <p>
+            <strong>Produit demandé :</strong>
+            ${getParam("product") || "inconnu"}
+          </p>
+        </div>
+      `;
+    }
+  }
 }
-// add to cart button event handler
-async function addToCartHandler(e) {
-  const product = await dataSource.findProductById(e.target.dataset.id);
-  addProductToCart(product);
-}
 
-// add listener to Add to Cart button
-document
-  .getElementById("addToCart")
-  .addEventListener("click", addToCartHandler);
+
+init();
