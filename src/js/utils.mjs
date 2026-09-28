@@ -1,22 +1,10 @@
-
-// Retourne le premier élément correspondant au sélecteur.
 export function qs(selector, parent = document) {
   return parent.querySelector(selector);
 }
 
 // Récupère une valeur depuis localStorage.
 export function getLocalStorage(key) {
-  const value = localStorage.getItem(key);
-
-  if (value === null) {
-    return [];
-  }
-
-  try {
-    return JSON.parse(value);
-  } catch {
-    return [];
-  }
+  return JSON.parse(localStorage.getItem(key));
 }
 
 
@@ -26,25 +14,19 @@ export function setLocalStorage(key, data) {
 }
 
 export function setClick(selector, callback) {
-  const element = qs(selector);
-
-  if (!element) {
-    return;
-  }
-
-  element.addEventListener("touchend", (event) => {
+  qs(selector).addEventListener("touchend", (event) => {
     event.preventDefault();
-    callback(event);
+    callback();
   });
-
-  element.addEventListener("click", callback);
+  qs(selector).addEventListener("click", callback);
 }
 
 
 export function getParam(param) {
-  const url = new URL(window.location.href);
-  return url.searchParams.get(param);
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
 }
+
 
 export function renderListWithTemplate(
   template,
@@ -212,23 +194,18 @@ export function getResponsiveImage(image, alt = "") {
   }
 
   /*
-   * Exemple :
-   * photo~320.jpg
+   * Aucune variante ~640 n'existe pour l'instant dans ce projet
+   * (les images ne sont fournies qu'en ~320) : essayer de la
+   * charger quand même cassait systématiquement l'image sur
+   * écran large (>= 700px), le <source> pointant vers un
+   * fichier qui n'existe pas.
    *
-   * devient :
-   * photo~640.jpg
+   * Le jour où de vraies images ~640 seront ajoutées, remplace
+   * la ligne ci-dessous par :
    *
-   * IMPORTANT :
-   * l'ancienne regex :
-   *
-   * /\~320(?=**\.**[^.]+$)/
-   *
-   * était invalide.
+   *   const large = image.replace(/~320(?=\.[^.]+$)/, "~640");
    */
-  const large = image.replace(
-    /~320(?=\.[^.]+$)/,
-    "~640"
-  );
+  const large = image;
 
   return `
     <picture>

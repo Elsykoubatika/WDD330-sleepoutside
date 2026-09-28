@@ -1,9 +1,4 @@
-import {
-  getLocalStorage,
-  loadHeaderFooter,
-  setLocalStorage,
-  updateCartCount
-} from "./utils.mjs";
+import {getLocalStorage, loadHeaderFooter, setLocalStorage, updateCartCount } from "./utils.mjs";
 
 
 async function init() {
@@ -55,12 +50,6 @@ async function init() {
         ${item.Colors?.[0]?.ColorName || ""}
       </p>
 
-
-      <!--
-        PROMPT 3 - CART QUANTITY
-        allow the customer to change
-        the quantity of the product.
-      -->
       <label
         class="cart-card__quantity"
         for="quantity-${item.Id}">
@@ -76,8 +65,6 @@ async function init() {
           data-id="${item.Id}" />
 
       </label>
-
-
       <p class="cart-card__price">
         $${(
           Number(item.FinalPrice || 0) *
