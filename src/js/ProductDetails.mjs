@@ -15,7 +15,7 @@ export default class ProductDetails {
   }
 
   async init() {
-    // Get the product from ProductData.
+    // Get the product from ExternalServices.
     this.product = await this.dataSource.findProductById(this.productId);
 
     // Display an error message if the product does not exist.

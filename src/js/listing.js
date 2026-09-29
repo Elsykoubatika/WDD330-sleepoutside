@@ -1,4 +1,4 @@
-import ProductData from "./ProductData.mjs";
+import ExternalServices from "./ExternalServices.mjs";
 import ProductList from "./ProductList.mjs";
 import Alert from "./Alert.js";
 import { getParam, loadHeaderFooter, renderBreadcrumb, updateCartCount } from "./utils.mjs";
@@ -16,7 +16,7 @@ async function init() {
 
   document.querySelector(".listing-title").textContent = title;
 
-  const dataSource = new ProductData(category || "tents");
+  const dataSource = new ExternalServices(category || "tents");
   const listElement = document.querySelector(".product-list");
   const productList = new ProductList(title, dataSource, listElement);
   const products = search ? await dataSource.searchProducts(search) : await dataSource.getData();

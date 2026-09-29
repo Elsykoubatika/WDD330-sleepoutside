@@ -9,7 +9,7 @@ function convertToJson(response) {
 }
 
 
-export default class ProductData {
+export default class ExternalServices {
   constructor(category = "tents") {
     this.category = category;
 
