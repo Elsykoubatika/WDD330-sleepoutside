@@ -1,30 +1,29 @@
-function convertToJson(response) {
-  if (!response.ok) {
-    throw new Error(
-      `Impossible de charger le fichier JSON : ${response.status} ${response.statusText}`
-    );
-  }
+const baseURL = "http://server-nodejs.cit.byui.edu:3000/";
 
-  return response.json();
+export async function convertToJson(response) {
+  const jsonResponse = await response.json();
+  if (response.ok) {
+    return jsonResponse;
+  }
+  throw {
+    name: "servicesError",
+    message: jsonResponse,
+  };
 }
 
 
 export default class ExternalServices {
-  constructor(category = "tents") {
-    this.category = category;
-
-    /*
-     * Vite utilise src/ comme root.
-     *
-     * Depuis /product_pages/
-     * ../json/tents.json devient :
-     *
-     * /json/tents.json
-     */
-    this.path = `../json/${this.category}.json`;
+  async checkout(payload) {
+    return fetch(`${baseURL}checkout/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    }).then(convertToJson);
   }
 
-  async getData() {
+async getData() {
     console.log("Chargement :", this.path);
 
     const response = await fetch(this.path);
